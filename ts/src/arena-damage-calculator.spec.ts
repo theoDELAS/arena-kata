@@ -83,7 +83,17 @@ describe("Arena damage calculator", function() {
     expect(computeDamage[1].lp).toBe(90);
     expect(computeDamage[2].lp).toBe(80);
   });
+  it("should return intact defenders life when attacker has 0 POW", () => {
+    // ARRANGE
+    
+    // ACT
+    const computeDamage = arenaDamageCalculator.computeDamage(new HeroBuilder().build(), waterFireEarthDefenders);
 
+    // ASSERT
+    expect(computeDamage[0].lp).toBe(100);
+    expect(computeDamage[1].lp).toBe(90);
+    expect(computeDamage[2].lp).toBe(80);
+  });
   // TODO : change the xit to it once the code is ready
   xit("should return intact defenders life when defenders has 0 LP", () => {
     // ARRANGE
