@@ -83,19 +83,20 @@ export class ArenaDamageCalculator {
     let damages = attacker.pow;
     const isCriticalHit = this.randomFloat * 100 < attacker.crtr;
 
-    // CRITICAL
+    // DAMAGES CALCUL WITH CRITICAL
     if(isCriticalHit) damages = this.getCriticalDamages(attacker.pow, attacker.crtr, attacker.leth)
     
-    // ATTACK BUFFS
+    // DAMAGES CALCUL WITH ATTACK BUFFS
     if(attacker.buffs.includes(Buff.Attack)) damages *= 1.25;
 
-    // DEFENSE BUFF
+    // DAMAGES CALCUL WITH DEFENSE BUFF
     if(defenderToAttack.buffs.includes(Buff.Defense)) damages *= 0.75;
 
+    // DAMAGES CALCUl WITH DEF
     damages = this.getDamagesDependingDef(damages, defenderToAttack.def);
     
+    // DAMAGES CALCUL WITH AFFINITY
     damages = this.getDamagesDependingAffinity(damages, defenderToAttack.affinity);
-
 
     return Math.floor(damages);
   }
@@ -114,4 +115,6 @@ export class ArenaDamageCalculator {
       defender.lp = 0;
     }
   }
+
+
 }
