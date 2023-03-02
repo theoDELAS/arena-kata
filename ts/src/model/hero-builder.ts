@@ -48,6 +48,6 @@ export class HeroBuilder {
     }
 
     build(): Hero {
-        return new Hero(this.element, this.pow, this.def, this.leth, this.crtr, this.lp);
+        return new Hero(this.element, this.pow, this.def, this.leth, this.crtr, this.lp).setBuffs(this.buffs);
     }
   }

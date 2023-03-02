@@ -18,4 +18,9 @@ export class Hero {
   public setAffinity(affinity : Affinity) {
     this.affinity = affinity;
   }
+
+  setBuffs(buffs: Buff[]): Hero {
+    this.buffs = buffs;
+    return this
+}
 }
