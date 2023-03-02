@@ -6,4 +6,9 @@ export class Hero {
 
   constructor(readonly element: HeroElement, readonly pow: number, readonly def: number, readonly leth: number, readonly crtr: number, public lp: number) {
   }
+
+  setBuffs(buffs: Buff[]): Hero {
+    this.buffs = buffs;
+    return this
+}
 }

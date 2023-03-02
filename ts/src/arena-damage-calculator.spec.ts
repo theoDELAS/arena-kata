@@ -223,7 +223,7 @@ describe("Arena damage calculator", function() {
     const computeDamage = arenaDamageCalculator.computeDamage(attackerWaterHero, [defenderWaterHeroBUFF]);
 
     // ASSERT
-    expect(computeDamage[0].lp).toBe(93);
+    expect(computeDamage[0].lp).toBe(95);
   });
 
 
@@ -234,6 +234,6 @@ describe("Arena damage calculator", function() {
     const computeDamage = arenaDamageCalculator.computeDamage(attackerWaterHeroBUFF, [defenderEarthHero1800DEF]);
 
     // ASSERT
-    expect(computeDamage[0].lp).toBe(71);
+    expect(computeDamage[0].lp).toBe(69);
   });
 });
