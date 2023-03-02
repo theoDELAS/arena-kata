@@ -70,6 +70,7 @@ describe("Arena damage calculator", function() {
     // ASSERT
     expect(computeDamage).toEqual([]);
   });
+  
   it("should return intact defenders life when attacker has 0 LP", () => {
     // ARRANGE
     const defenders = [defenderWaterHero, defenderFireHero1, defenderEarthHero];
@@ -83,6 +84,7 @@ describe("Arena damage calculator", function() {
     expect(computeDamage[1].lp).toBe(90);
     expect(computeDamage[2].lp).toBe(80);
   });
+
   it("should return intact defenders life when attacker has 0 POW", () => {
     // ARRANGE
     
@@ -94,6 +96,7 @@ describe("Arena damage calculator", function() {
     expect(computeDamage[1].lp).toBe(90);
     expect(computeDamage[2].lp).toBe(80);
   });
+
   // TODO : change the xit to it once the code is ready
   xit("should return died defenders when defenders has 0 LP", () => {
     // ARRANGE
@@ -138,6 +141,7 @@ describe("Arena damage calculator", function() {
     // Earth defender
     expect(computeDamage[2].lp).toBe(80);
   });
+
   it("should attack the hero of the weak type against the attacker with a 20% damage bonus", () => {
     // ARRANGE
 
@@ -147,6 +151,7 @@ describe("Arena damage calculator", function() {
     // ASSERT
     expect(computeDamage[0].lp).toBe(94);
   });
+
   it("should attack the hero of the same type against the attacker if no weak type is in front", () => {
     // ARRANGE
 
@@ -158,6 +163,7 @@ describe("Arena damage calculator", function() {
     expect(computeDamage[1].lp).toBe(90);
     expect(computeDamage[2].lp).toBeLessThan(80);
   });
+
   it("should attack the hero of the same type against the attacker without damage bonus", () => {
     // ARRANGE
 
@@ -167,6 +173,7 @@ describe("Arena damage calculator", function() {
     // ASSERT
     expect(computeDamage[0].lp).toBe(75);
   });
+
   it("should attack one of the heroes with a strong type against the attacker if no other type is in front", () => {
     // ARRANGE
 
@@ -178,6 +185,7 @@ describe("Arena damage calculator", function() {
     expect(computeDamage[1].lp).toBeLessThanOrEqual(90);
     expect(computeDamage[2].lp).toBeLessThanOrEqual(90);
   });
+
   it("should attack the hero of the strong type against the attacker with a damage malus (-20%)", () => {
     // ARRANGE
 
@@ -187,6 +195,7 @@ describe("Arena damage calculator", function() {
     // ASSERT
     expect(computeDamage[0].lp).toBe(86);
   });
+
   it("should decrease damage by 1% for every 75 defense points (rounded down to the nearest unit)", () => {
     // ARRANGE
 
@@ -197,6 +206,7 @@ describe("Arena damage calculator", function() {
     // ASSERT
     expect(computeDamage[0].lp).toBe(77);
   })
+
   it("CRTR should increase damage by 50% without LETH", () => {
     // ARRANGE
 
@@ -206,6 +216,7 @@ describe("Arena damage calculator", function() {
     // ASSERT
     expect(computeDamage[0].lp).toBe(85);
   })
+
   it("LETH should increase the damage even more with a critical hit", () => {
     // ARRANGE
 
@@ -215,6 +226,8 @@ describe("Arena damage calculator", function() {
     // ASSERT
     expect(computeDamage[0].lp).toBe(73);
   });
+
+
   it("a defender with a defense buff should take less damage", () => {
     // ARRANGE
 
@@ -224,6 +237,7 @@ describe("Arena damage calculator", function() {
     // ASSERT
     expect(computeDamage[0].lp).toBe(95);
   });
+
   it("a attacker with a attack buff should take more damage", () => {
     // ARRANGE
 
@@ -244,4 +258,5 @@ describe("Arena damage calculator", function() {
     // ASSERT
     expect(computeDamage2[0].lp).toBeGreaterThan(computeDamage1[0].lp);
   });
+
 });

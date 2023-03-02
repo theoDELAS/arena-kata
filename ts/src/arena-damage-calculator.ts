@@ -13,17 +13,21 @@ export class ArenaDamageCalculator {
    * Precondition - fight is not already won (there is still one defender with lp > 0)
    */
   computeDamage(attacker: Hero, defenders: Hero[]): Hero[] {
-    if(!attacker || attacker.lp <= 0 || attacker.pow <= 0 || defenders.length === 0) {
+    const attackerIsNotValid= !attacker || attacker.lp <= 0 || attacker.pow <= 0 || defenders.length === 0
+    
+    if(attackerIsNotValid) {
       return defenders;
     }
-    
+
     if (!attacker.buffs.includes(Buff.Holy)) {
-      this.determinesDefendersAffinity(attacker.element, defenders);
-      this.sortedDefendersDependingAffinity(defenders);
-    }
-    
+    this.setDefendersAffinity(attacker.element, defenders);
+
+    this.weakestDefenders = this.filterDefendersByAffinity(defenders, Affinity.Weak);
+    this.neutralDefenders = this.filterDefendersByAffinity(defenders, Affinity.Neutral);
+    this.strongestDefenders = this.filterDefendersByAffinity(defenders, Affinity.Strong);
+  }
+
     const defenderToAttack = this.getDefenderToAttack(defenders);
-    
     const damages = this.getDamages(attacker, defenderToAttack);
     
     this.attackDefender(damages, defenderToAttack);
@@ -32,14 +36,14 @@ export class ArenaDamageCalculator {
 
   }
 
-  determinesDefendersAffinity(attackerElement: HeroElement, defenders: Hero[]) {
+  private setDefendersAffinity(attackerElement: HeroElement, defenders: Hero[]) {
     for(const defender of defenders) {
       if (defender.lp <= 0) { continue; }
-      defender.setAffinity(this.determinesDefenderAffinity(attackerElement, defender.element));
+      defender.setAffinity(this.setDefenderAffinity(attackerElement, defender.element));
     }
   }
 
-  determinesDefenderAffinity(attackerElement: HeroElement, defenderElement: HeroElement): Affinity {
+  private setDefenderAffinity(attackerElement: HeroElement, defenderElement: HeroElement): Affinity {
     switch (attackerElement) {
       case HeroElement.Fire:
         return defenderElement === HeroElement.Fire ? Affinity.Neutral : defenderElement === HeroElement.Earth ? Affinity.Strong : Affinity.Weak
@@ -50,27 +54,20 @@ export class ArenaDamageCalculator {
     }
   }
 
-  sortedDefendersDependingAffinity(defenders: Hero[]) {
-    for(const defender of defenders) {
-      switch (defender.affinity) {
-        case Affinity.Weak:
-          this.weakestDefenders.push(defender)
-          break;
-        case Affinity.Strong:
-          this.strongestDefenders.push(defender)
-          break;
-        case Affinity.Neutral:
-          this.neutralDefenders.push(defender)
-          break;
-      }
-    }
+  private filterDefendersByAffinity(defenders: Hero[], affinity: Affinity): Hero[] {
+    return defenders.filter((hero) => { hero.affinity === affinity })
   }
 
-  getDefenderToAttack(defenders: Hero[]) {
-    return this.weakestDefenders.length && this.weakestDefenders[Math.floor(this.randomFloat * this.weakestDefenders.length)] || this.neutralDefenders.length && this.neutralDefenders[Math.floor(this.randomFloat * this.neutralDefenders.length)] || this.strongestDefenders[Math.floor(this.randomFloat * this.strongestDefenders.length)] || defenders[Math.floor(this.randomFloat * defenders.length)];
+
+  private getDefenderToAttack() {
+    return this.weakestDefenders.length 
+    && this.weakestDefenders[Math.floor(this.randomFloat * this.weakestDefenders.length)] 
+    || this.neutralDefenders.length 
+    && this.neutralDefenders[Math.floor(this.randomFloat * this.neutralDefenders.length)] 
+    || this.strongestDefenders[Math.floor(this.randomFloat * this.strongestDefenders.length)];
   }
 
-  getDamagesDependingAffinity(damages: number, affinityToAttacker: Affinity | null): number {
+  private getDamagesPerAffinity(damages: number, affinityToAttacker: Affinity | null): number {
     switch (affinityToAttacker) {
       case Affinity.Weak:
         return damages *= 1.2;
@@ -81,7 +78,7 @@ export class ArenaDamageCalculator {
     }
   }
 
-  getDamages(attacker: Hero, defenderToAttack: Hero) {
+  private getDamages(attacker: Hero, defenderToAttack: Hero) {
     let damages = attacker.pow;
     const isCriticalHit = this.randomFloat * 100 < attacker.crtr;
 
@@ -100,7 +97,7 @@ export class ArenaDamageCalculator {
     } else {
       damages = this.getDamagesDependingDef(damages, defenderToAttack.def);
       // DAMAGES CALCUL WITH AFFINITY
-      damages = this.getDamagesDependingAffinity(damages, defenderToAttack.affinity);
+      damages = this.getDamagesPerAffinity(damages, defenderToAttack.affinity);
     }
   
     return Math.floor(damages);
@@ -110,11 +107,11 @@ export class ArenaDamageCalculator {
     return (attackerPow + (0.5 + attackerLeth/ 5000) * attackerPow)
   }
 
-  getDamagesDependingDef(damages: number, defenderDef: number) {
+  private getDamagesDependingDef(damages: number, defenderDef: number) {
     return damages * (1-defenderDef/7500);
   }
 
-  attackDefender(damages: number, defender: Hero) {
+  private attackDefender(damages: number, defender: Hero) {
     defender.lp = defender.lp - damages
     if (defender.lp < 0) {
       defender.lp = 0;
