@@ -16,18 +16,20 @@ export class ArenaDamageCalculator {
     if(!attacker || attacker.lp <= 0 || attacker.pow <= 0 || defenders.length === 0) {
       return defenders;
     }
-
-    this.determinesDefendersAffinity(attacker.element, defenders);
-
-    this.sortedDefendersDependingAffinity(defenders);
-
-    const defenderToAttack = this.getDefenderToAttack();
-
+    
+    if (!attacker.buffs.includes(Buff.Holy)) {
+      this.determinesDefendersAffinity(attacker.element, defenders);
+      this.sortedDefendersDependingAffinity(defenders);
+    }
+    
+    const defenderToAttack = this.getDefenderToAttack(defenders);
+    
     const damages = this.getDamages(attacker, defenderToAttack);
-
+    
     this.attackDefender(damages, defenderToAttack);
     
     return defenders;
+
   }
 
   determinesDefendersAffinity(attackerElement: HeroElement, defenders: Hero[]) {
@@ -64,8 +66,8 @@ export class ArenaDamageCalculator {
     }
   }
 
-  getDefenderToAttack() {
-    return this.weakestDefenders.length && this.weakestDefenders[Math.floor(this.randomFloat * this.weakestDefenders.length)] || this.neutralDefenders.length && this.neutralDefenders[Math.floor(this.randomFloat * this.neutralDefenders.length)] || this.strongestDefenders[Math.floor(this.randomFloat * this.strongestDefenders.length)];
+  getDefenderToAttack(defenders: Hero[]) {
+    return this.weakestDefenders.length && this.weakestDefenders[Math.floor(this.randomFloat * this.weakestDefenders.length)] || this.neutralDefenders.length && this.neutralDefenders[Math.floor(this.randomFloat * this.neutralDefenders.length)] || this.strongestDefenders[Math.floor(this.randomFloat * this.strongestDefenders.length)] || defenders[Math.floor(this.randomFloat * defenders.length)];
   }
 
   getDamagesDependingAffinity(damages: number, affinityToAttacker: Affinity | null): number {
@@ -84,7 +86,7 @@ export class ArenaDamageCalculator {
     const isCriticalHit = this.randomFloat * 100 < attacker.crtr;
 
     // DAMAGES CALCUL WITH CRITICAL
-    if(isCriticalHit) damages = this.getCriticalDamages(attacker.pow, attacker.crtr, attacker.leth)
+    if(isCriticalHit) damages = this.getCriticalDamages(attacker.pow, attacker.leth)
     
     // DAMAGES CALCUL WITH ATTACK BUFFS
     if(attacker.buffs.includes(Buff.Attack)) damages *= 1.25;
@@ -93,15 +95,18 @@ export class ArenaDamageCalculator {
     if(defenderToAttack.buffs.includes(Buff.Defense)) damages *= 0.75;
 
     // DAMAGES CALCUl WITH DEF
-    damages = this.getDamagesDependingDef(damages, defenderToAttack.def);
-    
-    // DAMAGES CALCUL WITH AFFINITY
-    damages = this.getDamagesDependingAffinity(damages, defenderToAttack.affinity);
-
+    if (attacker.buffs.includes(Buff.Holy)) {
+      damages *= 0.8;
+    } else {
+      damages = this.getDamagesDependingDef(damages, defenderToAttack.def);
+      // DAMAGES CALCUL WITH AFFINITY
+      damages = this.getDamagesDependingAffinity(damages, defenderToAttack.affinity);
+    }
+  
     return Math.floor(damages);
   }
 
-  getCriticalDamages(attackerPow: number, attackerCrtr: number, attackerLeth: number) {
+  getCriticalDamages(attackerPow: number, attackerLeth: number) {
     return (attackerPow + (0.5 + attackerLeth/ 5000) * attackerPow)
   }
 
@@ -115,6 +120,4 @@ export class ArenaDamageCalculator {
       defender.lp = 0;
     }
   }
-
-
 }

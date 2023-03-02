@@ -23,6 +23,7 @@ describe("Arena damage calculator", function() {
   let attackerFireHeroCRTRandLETH: Hero;
   let attackerEarthHero: Hero;
   let attackerEarthHeroNEGATIVE: Hero;
+  let attackerEarthHeroHOLY: Hero;
 
   let waterFireEarthDefenders: Hero[];
   let fireFireEarthDefenders: Hero[];
@@ -50,6 +51,7 @@ describe("Arena damage calculator", function() {
     attackerFireHeroCRTRandLETH = new HeroBuilder().withElement(HeroElement.Fire).withLp(100).withPow(10).withCrtr(100).withLeth(1000).build();
     attackerEarthHero = new HeroBuilder().withElement(HeroElement.Earth).withLp(100).withPow(5).build();
     attackerEarthHeroNEGATIVE = new HeroBuilder().withElement(HeroElement.Earth).withLp(100).withPow(-5).build();
+    attackerEarthHeroHOLY = new HeroBuilder().withElement(HeroElement.Earth).withLp(100).withPow(5).withBuff([Buff.Holy]).build();
 
     // Teams
     waterFireEarthDefenders = [defenderWaterHero, defenderFireHero1, defenderEarthHero];
@@ -230,5 +232,16 @@ describe("Arena damage calculator", function() {
 
     // ASSERT
     expect(computeDamage[0].lp).toBe(69);
+  });
+  it("a attacker with a holy buff should do 20% less damage", () => {
+    // ARRANGE
+
+    // ACT
+    const computeDamage1 = arenaDamageCalculator.computeDamage(attackerEarthHero, [new HeroBuilder().withLp(100).withElement(HeroElement.Earth).build()]);
+    const computeDamage2 = arenaDamageCalculator.computeDamage(attackerEarthHeroHOLY, [new HeroBuilder().withLp(100).withElement(HeroElement.Earth).build()]);
+
+
+    // ASSERT
+    expect(computeDamage2[0].lp).toBeGreaterThan(computeDamage1[0].lp);
   });
 });
