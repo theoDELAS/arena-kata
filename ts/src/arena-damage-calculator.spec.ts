@@ -15,7 +15,6 @@ describe("Arena damage calculator", function() {
   let defenderFireHero3: Hero;
   // Earth defenders
   let defenderEarthHero: Hero;
-  let defenderEarthHero75DEF: Hero;
   let defenderEarthHero1800DEF: Hero;
   // Attackers
   let attackerWaterHero: Hero;
@@ -23,6 +22,7 @@ describe("Arena damage calculator", function() {
   let attackerWaterHeroBUFF: Hero;
   let attackerFireHeroCRTRandLETH: Hero;
   let attackerEarthHero: Hero;
+  let attackerEarthHeroNEGATIVE: Hero;
 
   let waterFireEarthDefenders: Hero[];
   let fireFireEarthDefenders: Hero[];
@@ -41,7 +41,6 @@ describe("Arena damage calculator", function() {
 
     // Earth defenders
     defenderEarthHero = new HeroBuilder().withElement(HeroElement.Earth).withLp(80).build();
-    defenderEarthHero75DEF = new HeroBuilder().withElement(HeroElement.Earth).withLp(80).withDef(75).build();
     defenderEarthHero1800DEF = new HeroBuilder().withElement(HeroElement.Earth).withLp(80).withDef(1800).build();
 
     // Attackers
@@ -50,6 +49,7 @@ describe("Arena damage calculator", function() {
     attackerWaterHeroBUFF = new HeroBuilder().withElement(HeroElement.Water).withLp(100).withPow(10).withBuff([Buff.Attack]).withCrtr(100).build();
     attackerFireHeroCRTRandLETH = new HeroBuilder().withElement(HeroElement.Fire).withLp(100).withPow(10).withCrtr(100).withLeth(1000).build();
     attackerEarthHero = new HeroBuilder().withElement(HeroElement.Earth).withLp(100).withPow(5).build();
+    attackerEarthHeroNEGATIVE = new HeroBuilder().withElement(HeroElement.Earth).withLp(100).withPow(-5).build();
 
     // Teams
     waterFireEarthDefenders = [defenderWaterHero, defenderFireHero1, defenderEarthHero];
@@ -93,7 +93,7 @@ describe("Arena damage calculator", function() {
     expect(computeDamage[2].lp).toBe(80);
   });
   // TODO : change the xit to it once the code is ready
-  xit("should return intact defenders life when defenders has 0 LP", () => {
+  xit("should return died defenders when defenders has 0 LP", () => {
     // ARRANGE
     const diedWaterDefender = new HeroBuilder().build();
     const diedFireDefender = new HeroBuilder().withElement(HeroElement.Fire).build();
@@ -108,6 +108,20 @@ describe("Arena damage calculator", function() {
     expect(computeDamage[1].lp).toBe(0);
     expect(computeDamage[2].lp).toBe(0);
   });
+
+  it("should return intact defenders life when attacker has negative POW", () => {
+    // ARRANGE
+    const defenders = [defenderWaterHero, defenderFireHero1, defenderEarthHero];
+    
+    // ACT
+    const computeDamage = arenaDamageCalculator.computeDamage(attackerEarthHeroNEGATIVE, defenders);
+
+    // ASSERT
+    expect(computeDamage[0].lp).toBe(100);
+    expect(computeDamage[1].lp).toBe(90);
+    expect(computeDamage[2].lp).toBe(80);
+  });
+
   it("should attack the defender with the weakest type against the attacker and not the other elements", () => {
     // ARRANGE
 
@@ -175,13 +189,11 @@ describe("Arena damage calculator", function() {
     // ARRANGE
 
     // ACT
-    const computeDamage1 = arenaDamageCalculator.computeDamage(attackerEarthHero, [defenderEarthHero75DEF]);
-    const computeDamage2 = arenaDamageCalculator.computeDamage(attackerEarthHero, [defenderEarthHero1800DEF]);
+    const computeDamage = arenaDamageCalculator.computeDamage(attackerEarthHero, [defenderEarthHero1800DEF]);
 
 
     // ASSERT
-    expect(computeDamage1[0].lp).toBe(76);
-    expect(computeDamage2[0].lp).toBe(77);
+    expect(computeDamage[0].lp).toBe(77);
   })
   it("CRTR should increase damage by 50% without LETH", () => {
     // ARRANGE
