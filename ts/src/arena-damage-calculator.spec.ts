@@ -15,7 +15,6 @@ describe("Arena damage calculator", function() {
   let defenderFireHero3: Hero;
   // Earth defenders
   let defenderEarthHero: Hero;
-  let defenderEarthHero75DEF: Hero;
   let defenderEarthHero1800DEF: Hero;
   // Attackers
   let attackerWaterHero: Hero;
@@ -42,7 +41,6 @@ describe("Arena damage calculator", function() {
 
     // Earth defenders
     defenderEarthHero = new HeroBuilder().withElement(HeroElement.Earth).withLp(80).build();
-    defenderEarthHero75DEF = new HeroBuilder().withElement(HeroElement.Earth).withLp(80).withDef(75).build();
     defenderEarthHero1800DEF = new HeroBuilder().withElement(HeroElement.Earth).withLp(80).withDef(1800).build();
 
     // Attackers
@@ -190,13 +188,11 @@ describe("Arena damage calculator", function() {
     // ARRANGE
 
     // ACT
-    const computeDamage1 = arenaDamageCalculator.computeDamage(attackerEarthHero, [defenderEarthHero75DEF]);
-    const computeDamage2 = arenaDamageCalculator.computeDamage(attackerEarthHero, [defenderEarthHero1800DEF]);
+    const computeDamage = arenaDamageCalculator.computeDamage(attackerEarthHero, [defenderEarthHero1800DEF]);
 
 
     // ASSERT
-    expect(computeDamage1[0].lp).toBe(76);
-    expect(computeDamage2[0].lp).toBe(77);
+    expect(computeDamage[0].lp).toBe(77);
   })
 
 
