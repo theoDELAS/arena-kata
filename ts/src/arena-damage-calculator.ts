@@ -1,4 +1,3 @@
-import { HeroElement } from "./model/hero-element";
 import { Buff } from "./model/buff";
 import { Hero } from "./model/hero";
 import { Affinity } from "./model/affinity";
@@ -20,14 +19,14 @@ export class ArenaDamageCalculator {
     }
 
     if (!attacker.buffs.includes(Buff.Holy)) {
-    this.setDefendersAffinity(attacker.element, defenders);
+      this.setDefendersAffinity(attacker, defenders);
 
-    this.weakestDefenders = this.filterDefendersByAffinity(defenders, Affinity.Weak);
-    this.neutralDefenders = this.filterDefendersByAffinity(defenders, Affinity.Neutral);
-    this.strongestDefenders = this.filterDefendersByAffinity(defenders, Affinity.Strong);
+      this.weakestDefenders = this.filterDefendersByAffinity(defenders, Affinity.Weak);
+      this.neutralDefenders = this.filterDefendersByAffinity(defenders, Affinity.Neutral);
+      this.strongestDefenders = this.filterDefendersByAffinity(defenders, Affinity.Strong);
   }
 
-    const defenderToAttack = this.getDefenderToAttack(defenders);
+    const defenderToAttack = this.getDefenderToAttack();
     const damages = this.getDamages(attacker, defenderToAttack);
     
     this.attackDefender(damages, defenderToAttack);
@@ -36,21 +35,20 @@ export class ArenaDamageCalculator {
 
   }
 
-  private setDefendersAffinity(attackerElement: HeroElement, defenders: Hero[]) {
+  private setDefendersAffinity(attacker: Hero, defenders: Hero[]) {
     for(const defender of defenders) {
       if (defender.lp <= 0) { continue; }
-      defender.setAffinity(this.setDefenderAffinity(attackerElement, defender.element));
+      defender.setAffinity(this.getDefenderAffinity(attacker, defender));
     }
   }
 
-  private setDefenderAffinity(attackerElement: HeroElement, defenderElement: HeroElement): Affinity {
-    switch (attackerElement) {
-      case HeroElement.Fire:
-        return defenderElement === HeroElement.Fire ? Affinity.Neutral : defenderElement === HeroElement.Earth ? Affinity.Strong : Affinity.Weak
-      case HeroElement.Water:
-        return defenderElement === HeroElement.Fire ? Affinity.Weak : defenderElement === HeroElement.Earth ? Affinity.Strong : Affinity.Neutral
-      case HeroElement.Earth:
-        return defenderElement === HeroElement.Fire ? Affinity.Strong : defenderElement === HeroElement.Earth ? Affinity.Neutral : Affinity.Weak
+  private getDefenderAffinity(attacker: Hero, defender: Hero): Affinity {
+    if (attacker.element === defender.element) { 
+      return Affinity.Neutral
+    } else if (attacker.getWeakness() === defender.element) {
+      return Affinity.Strong;
+    } else {
+      return Affinity.Weak;
     }
   }
 
@@ -103,7 +101,7 @@ export class ArenaDamageCalculator {
     return Math.floor(damages);
   }
 
-  getCriticalDamages(attackerPow: number, attackerLeth: number) {
+  private getCriticalDamages(attackerPow: number, attackerLeth: number) {
     return (attackerPow + (0.5 + attackerLeth/ 5000) * attackerPow)
   }
 

@@ -30,4 +30,15 @@ export class Hero {
     this.buffs = buffs;
     return this
 }
+  public getWeakness(): HeroElement {
+    switch (this.element) {
+      case HeroElement.Earth: 
+        return HeroElement.Fire
+      case HeroElement.Fire:
+        return HeroElement.Water
+      case HeroElement.Water:
+        return HeroElement.Earth
+    } 
+  }
+  
 }
