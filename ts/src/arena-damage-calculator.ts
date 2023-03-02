@@ -55,7 +55,7 @@ export class ArenaDamageCalculator {
   }
 
   private filterDefendersByAffinity(defenders: Hero[], affinity: Affinity): Hero[] {
-    return defenders.filter((hero) => { hero.affinity === affinity })
+    return defenders.filter(hero => hero.affinity == affinity)
   }
 
 

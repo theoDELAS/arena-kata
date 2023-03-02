@@ -6,7 +6,14 @@ export class Hero {
   public buffs: Buff[] = [];
   affinity: Affinity | null;
 
-  constructor(readonly element: HeroElement, readonly pow: number, readonly def: number, readonly leth: number, readonly crtr: number, public lp: number, affinity: Affinity  | null = null) {
+  constructor(
+    readonly element: HeroElement, 
+    readonly pow: number, 
+    readonly def: number, 
+    readonly leth: number, 
+    readonly crtr: number, 
+    public lp: number, 
+    affinity: Affinity  | null = null) {
     this.affinity = affinity;
   }
 
